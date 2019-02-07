@@ -1,0 +1,36 @@
+version: "3"
+services:
+  nginx:
+    build: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ${APP_PATH}:/var/www/symfony
+    working_dir: /var/www/symfony
+  php:
+    build: php-fpm
+    volumes:
+      - ${APP_PATH}:/var/www/symfony
+    environment:
+      - PHP_IDE_CONFIG=serverName=symfony.test # Replace symfony.test with the server name you've created in your IDE
+  database:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+  elk:
+    image: willdurand/elk
+    ports:
+      - 8080:80
+    volumes:
+      - ./elk/logstash:/etc/logstash
+      - ./elk/logstash/patterns:/opt/logstash/patterns
+      - ${APP_PATH}:/var/www/symfony
+  composer:
+    image: composer
+    user: "1000"
+    volumes:
+      - ${APP_PATH}:/app
+      - ./composer_cache:/composer/cache
