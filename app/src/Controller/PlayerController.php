@@ -27,7 +27,6 @@ class PlayerController extends AbstractController
     public function test(int $id, CollegePlayerStatsScraper $scraper, SerializerInterface $serializer, AdapterInterface $cache): JsonResponse
     {
         $cachedItem = $cache->getItem((string)$id);
-        $cachedItem->expiresAt(new \DateTime('tomorrow', new \DateTimeZone('UTC')));
 
         if (!$cachedItem->isHit()) {
             $stats = $scraper->getPlayerStats($id);
